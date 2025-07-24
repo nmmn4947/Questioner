@@ -1,63 +1,32 @@
-using System.Collections;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class Ping : MonoBehaviour
 {
-    static public Ping instance;
+    public GameObject selected;
+    public RectTransform iconRt;
     RectTransform rt;
-    CanvasGroup cg;
-    [SerializeField] private float fadeInTime;
-    private float fadeInKeep = 0.0f;
-    private bool isActivate = false;
-
-    private void Awake()
-    {
-        instance = this;
-    }
-
+    Vector3 originalScaleIconRt;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         rt = GetComponent<RectTransform>();
-        cg = GetComponent<CanvasGroup>();
+        originalScaleIconRt = iconRt.localScale;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (isActivate)
+
+        if (RectTransformUtility.RectangleContainsScreenPoint(rt, Input.mousePosition, Camera.main))
         {
-            fadeInKeep += Time.deltaTime;
-            Debug.Log(fadeInKeep / fadeInTime);
-            cg.alpha = Mathf.Lerp(0, 1, fadeInKeep / fadeInTime);
+            selected.SetActive(true);
+            iconRt.localScale = originalScaleIconRt + new Vector3(0.25f, 0.25f, 0.25f);
         }
         else
         {
-
+            selected.SetActive(false);
+            iconRt.localScale = originalScaleIconRt;
         }
     }
-
-    public void activatePing()
-    {
-        Canvas parentCanvas = GetComponentInParent<Canvas>();
-
-        Vector2 localPoint;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            parentCanvas.GetComponent<RectTransform>(), // The Canvas's RectTransform
-            Input.mousePosition,                      // The screen point (mouse position)
-            parentCanvas.worldCamera,                 // The camera assigned to the Canvas's 'Render Camera'
-            out localPoint                            // The resulting local point
-        );
-
-        rt.anchoredPosition = localPoint;
-        isActivate = true;
-    }
-
-    public void deActivatePing()
-    {
-        isActivate = false;
-        cg.alpha = 0.0f;
-        fadeInKeep = 0.0f;
-    }
-    
 }
