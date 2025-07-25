@@ -73,6 +73,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lifetime: 2.5
+  pingSound: Missing
 --- !u!1 &7098023572133491664
 GameObject:
   m_ObjectHideFlags: 0

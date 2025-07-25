@@ -141,6 +141,11 @@ public class AudioManager : MonoBehaviour
             s.audioSource_m.loop = true;
         }
     }
+
+    public AudioMixer getAudioMixer()
+    {
+        return audioMixer;
+    }
 }
 
 [System.Serializable]

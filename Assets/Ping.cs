@@ -10,6 +10,7 @@ public class Ping : MonoBehaviour
     RectTransform rtParent;
     Vector3 originalScaleIconRt;
     public bool isSelected;
+    public bool isSetting = false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -25,8 +26,15 @@ public class Ping : MonoBehaviour
         if (RectTransformUtility.RectangleContainsScreenPoint(rt, Input.mousePosition, Camera.main))
         {
             selected.SetActive(true);
-            PingWheel.instance.assignSelectedPing(this);
-            isSelected = true;
+            if (PingWheel.instance.getWheelIsActive())
+            {
+                PingWheel.instance.assignSelectedPing(this);
+                isSelected = true;
+            }
+            else
+            {
+                isSelected = false;
+            }
             iconRt.localScale = originalScaleIconRt + new Vector3(0.25f, 0.25f, 0.25f);
         }
         else
@@ -39,6 +47,14 @@ public class Ping : MonoBehaviour
 
     public void InstantiatePing(RectTransform rta, GameObject parent)
     {
-        Instantiate(pingFXPrefab, rta.position, Quaternion.identity, parent.transform);
+        if (!isSetting)
+        {
+            Instantiate(pingFXPrefab, rta.position, Quaternion.identity, parent.transform);
+        }
+        else
+        {
+            AudioManager.Instance.PlaySFX("OnMyWay");
+            pingFXPrefab.SetActive(!pingFXPrefab.activeInHierarchy);
+        }
     }
 }

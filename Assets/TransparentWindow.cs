@@ -104,25 +104,34 @@ public class TransparentWindow : MonoBehaviour
         bool shouldBeInteractive = isAltPressed && isLeftClickPressed;
 
         // --- Manage Window Click-Through State ---
-        if (shouldBeInteractive && isWindowClickthrough)
+        if (isAltPressed && isWindowClickthrough)
         {
             // If ALT+LeftClick is held AND the window is currently click-through, make it interactive
             SetClickthrough(false);
-            PingWheel.instance.activatePing();
+            
             if (m_TextMeshProUGUI != null)
             {
                 m_TextMeshProUGUI.text = "Interactive Mode (ALT+Click held)";
             }
         }
-        else if (!shouldBeInteractive && !isWindowClickthrough)
+        else if (!isAltPressed && !isWindowClickthrough)
         {
             // If ALT+LeftClick is NOT held AND the window is currently interactive, make it click-through again
             SetClickthrough(true);
-            PingWheel.instance.deActivatePing();
+            
             if (m_TextMeshProUGUI != null)
             {
                 m_TextMeshProUGUI.text = "Click-Through Mode";
             }
+        }
+
+        if (shouldBeInteractive && !isWindowClickthrough)
+        {
+            PingWheel.instance.activatePing();
+        }
+        else
+        {
+            PingWheel.instance.deActivatePing();
         }
     }
 

@@ -15,7 +15,9 @@ public class PingWheel : MonoBehaviour
     [SerializeField] private Ping[] allPings;
     private Ping currentSelectedPing;
     private bool isPingonce;
+    private bool isPosonce = false;
     public GameObject spawnPoint;
+    private RectTransform spwnRct;
 
     private void Awake()
     {
@@ -26,6 +28,7 @@ public class PingWheel : MonoBehaviour
     void Start()
     {
         rt = GetComponent<RectTransform>();
+        spwnRct = spawnPoint.GetComponent<RectTransform>();
         cg = GetComponent<CanvasGroup>();
     }
 
@@ -36,19 +39,6 @@ public class PingWheel : MonoBehaviour
         {
             fadeInKeep += Time.deltaTime;
             cg.alpha = Mathf.Lerp(0, 1, fadeInKeep / fadeInTime);
-            bool nonSelected = false;
-            foreach (Ping p in allPings)
-            {
-                if (p.isSelected)
-                {
-                    nonSelected = true;
-                    break;
-                }
-            }
-            if (nonSelected)
-            {
-                currentSelectedPing = null;
-            }
         }
         else
         {
@@ -62,7 +52,19 @@ public class PingWheel : MonoBehaviour
             }
         }
 
-
+        bool nonSelected = false;
+        foreach (Ping p in allPings)
+        {
+            if (p.isSelected)
+            {
+                nonSelected = true;
+                break;
+            }
+        }
+        if (nonSelected)
+        {
+            currentSelectedPing = null;
+        }
     }
 
     public void activatePing()
@@ -76,8 +78,11 @@ public class PingWheel : MonoBehaviour
             parentCanvas.worldCamera,                 // The camera assigned to the Canvas's 'Render Camera'
             out localPoint                            // The resulting local point
         );
-
-        rt.anchoredPosition = localPoint;
+        if (!isPosonce)
+        {
+            rt.anchoredPosition = localPoint;
+            isPosonce = true;
+        }
         isActivate = true;
     }
 
@@ -85,6 +90,7 @@ public class PingWheel : MonoBehaviour
     {
         isActivate = false;
         isPingonce = false;
+        isPosonce = false;
         cg.alpha = 0.0f;
         fadeInKeep = 0.0f;
     }
