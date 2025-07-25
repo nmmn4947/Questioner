@@ -8,7 +8,14 @@ public class PingWheel : MonoBehaviour
     CanvasGroup cg;
     [SerializeField] private float fadeInTime;
     private float fadeInKeep = 0.0f;
-    private bool isActivate = false;
+    private bool isActivate = true;
+    public bool getWheelIsActive() { return isActivate; }
+
+
+    [SerializeField] private Ping[] allPings;
+    private Ping currentSelectedPing;
+    private bool isPingonce;
+    public GameObject spawnPoint;
 
     private void Awake()
     {
@@ -28,13 +35,34 @@ public class PingWheel : MonoBehaviour
         if (isActivate)
         {
             fadeInKeep += Time.deltaTime;
-            Debug.Log(fadeInKeep / fadeInTime);
             cg.alpha = Mathf.Lerp(0, 1, fadeInKeep / fadeInTime);
+            bool nonSelected = false;
+            foreach (Ping p in allPings)
+            {
+                if (p.isSelected)
+                {
+                    nonSelected = true;
+                    break;
+                }
+            }
+            if (nonSelected)
+            {
+                currentSelectedPing = null;
+            }
         }
         else
         {
-
+            if (currentSelectedPing != null)
+            {
+                if (!isPingonce)
+                {
+                    currentSelectedPing.InstantiatePing(rt, spawnPoint);
+                    isPingonce = true;
+                }
+            }
         }
+
+
     }
 
     public void activatePing()
@@ -56,8 +84,14 @@ public class PingWheel : MonoBehaviour
     public void deActivatePing()
     {
         isActivate = false;
+        isPingonce = false;
         cg.alpha = 0.0f;
         fadeInKeep = 0.0f;
+    }
+
+    public void assignSelectedPing(Ping p)
+    {
+        currentSelectedPing = p;
     }
     
 }
