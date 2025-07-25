@@ -10,6 +10,9 @@ using Unity.VisualScripting; // Not directly used in this logic, but kept if you
 
 public class TransparentWindow : MonoBehaviour
 {
+    [DllImport("user32.dll")]
+    private static extern bool SetForegroundWindow(IntPtr hWnd);
+
     // --- Existing DllImports for Window Manipulation ---
     [DllImport("user32.dll")]
     public static extern int MessageBox(IntPtr hWnd, string text, string caption, uint type);
@@ -59,6 +62,7 @@ public class TransparentWindow : MonoBehaviour
 
     // --- Internal State Variable ---
     private bool isWindowClickthrough = true; // Tracks the current state of the window's click-through property
+    public GameObject setting;
 
     private void Start()
     {
@@ -114,7 +118,7 @@ public class TransparentWindow : MonoBehaviour
                 m_TextMeshProUGUI.text = "Interactive Mode (ALT+Click held)";
             }
         }
-        else if (!isAltPressed && !isWindowClickthrough)
+        else if (!isAltPressed && !isWindowClickthrough && !setting.activeInHierarchy)
         {
             // If ALT+LeftClick is NOT held AND the window is currently interactive, make it click-through again
             SetClickthrough(true);
@@ -132,6 +136,11 @@ public class TransparentWindow : MonoBehaviour
         else
         {
             PingWheel.instance.deActivatePing();
+        }
+
+        if (setting.activeInHierarchy && isWindowClickthrough)
+        {
+            SetClickthrough(false);
         }
     }
 
@@ -153,6 +162,7 @@ public class TransparentWindow : MonoBehaviour
             {
                 // Set window to be layered but NOT transparent (interactive)
                 SetWindowLong(hWnd, GWL_EXSTYLE, WS_EX_LAYERED);
+                //SetForegroundWindow(hWnd);
             }
             isWindowClickthrough = clickthrough; // Update the internal state
         }
